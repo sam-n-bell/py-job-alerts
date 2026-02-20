@@ -90,9 +90,6 @@ STARTUP_KEYWORDS: list[str] = [
 # Minimum number of employees to be considered non-startup (when data is available).
 MIN_COMPANY_SIZE = 500
 
-# Companies to always exclude (lowercase substrings matched against company name).
-COMPANY_DENYLIST: list[str] = []
-
 # Companies to never show in results, regardless of any other logic.
 COMPANY_EXCLUDE: list[str] = [
     "microsoft",
@@ -105,51 +102,3 @@ COMPANY_EXCLUDE: list[str] = [
     "linkedin",
 ]
 
-# Companies to always include regardless of other startup signals (lowercase).
-COMPANY_ALLOWLIST: list[str] = [
-    "dell",
-    "ibm",
-    "oracle",
-    "salesforce",
-    "servicenow",
-    "workday",
-    "vmware",
-    "cisco",
-    "intel",
-    "amd",
-    "nvidia",
-    "qualcomm",
-    "heb",
-    "whole foods",
-    "target",
-    "walmart",
-    "home depot",
-    "capital one",
-    "jpmorgan",
-    "bank of america",
-    "wells fargo",
-    "american airlines",
-    "southwest airlines",
-    "united airlines",
-    "tesla",
-    "general motors",
-    "ford",
-    "charles schwab",
-    "usaa",
-    "visa",
-    "mastercard",
-    "paypal",
-    "stripe",
-    "twilio",
-    "atlassian",
-    "zendesk",
-    "hubspot",
-    "dropbox",
-    "box",
-    "splunk",
-    "elastic",
-    "mongodb",
-    "snowflake",
-    "databricks",
-    "palantir",
-]

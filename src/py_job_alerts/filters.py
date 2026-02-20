@@ -8,8 +8,6 @@ apply_filters() runs all predicates and returns only passing rows.
 import pandas as pd
 
 from .config import (
-    COMPANY_ALLOWLIST,
-    COMPANY_DENYLIST,
     COMPANY_EXCLUDE,
     CONTRACT_KEYWORDS,
     MIN_COMPANY_SIZE,
@@ -46,14 +44,6 @@ def _is_contract(row: pd.Series) -> bool:
 def _is_startup(row: pd.Series) -> bool:
     """Drop postings from companies that look like startups."""
     company = str(row.get("company", "")).lower()
-
-    # Allowlist bypasses all startup checks.
-    if any(allowed in company for allowed in COMPANY_ALLOWLIST):
-        return False
-
-    # Explicit denylist.
-    if any(denied in company for denied in COMPANY_DENYLIST):
-        return True
 
     # Description signals.
     desc = str(row.get("description", "")).lower()
