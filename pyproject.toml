@@ -1,0 +1,26 @@
+[project]
+name = "py-job-alerts"
+version = "0.1.0"
+description = "Automated Python backend job alerts via ntfy"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "python-jobspy>=1.1.80",
+    "requests>=2.32.0",
+    "pandas>=2.2.0",
+    "numpy>=2.0",
+]
+
+[project.scripts]
+job-alerts = "py_job_alerts.main:main"
+
+[build-system]
+requires = ["uv_build>=0.9.18,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.uv]
+# python-jobspy pins numpy==1.26.3 which doesn't build on free-threaded Python 3.14.
+# numpy 2.x ships free-threaded wheels and is fully compatible.
+override-dependencies = ["numpy>=2.0"]
+# This tool runs on macOS/Linux only (personal use).
+environments = ["sys_platform == 'darwin' or sys_platform == 'linux'"]
