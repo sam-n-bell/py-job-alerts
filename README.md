@@ -51,7 +51,6 @@ All tuneable settings are in `src/py_job_alerts/config.py`:
 - `STARTUP_KEYWORDS` — description substrings that suggest a startup
 - `MIN_COMPANY_SIZE` — drop companies below this headcount when data is available
 - `COMPANY_EXCLUDE` — companies to always drop
-- `COMPANY_DENYLIST` — companies always treated as startups
 
 ## Project structure
 

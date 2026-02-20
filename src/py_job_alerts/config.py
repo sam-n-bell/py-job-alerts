@@ -88,7 +88,7 @@ STARTUP_KEYWORDS: list[str] = [
 ]
 
 # Minimum number of employees to be considered non-startup (when data is available).
-MIN_COMPANY_SIZE = 500
+MIN_COMPANY_SIZE = 200
 
 # Companies to never show in results, regardless of any other logic.
 COMPANY_EXCLUDE: list[str] = [
