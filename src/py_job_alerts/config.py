@@ -100,5 +100,6 @@ COMPANY_EXCLUDE: list[str] = [
     "apple",
     "meta",
     "linkedin",
+    "realtor.com"
 ]
 
