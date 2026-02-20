@@ -1,55 +1,58 @@
 # py-job-alerts
 
-Automated Python backend job alerts delivered to your phone via [ntfy](https://ntfy.sh).
+Scrapes LinkedIn and ZipRecruiter for Python backend roles and writes new
+postings to a CSV you can check at your leisure.
 
-Searches LinkedIn, Indeed, Glassdoor, and ZipRecruiter for Python backend roles that are:
+Filters for:
 - Hybrid in **Austin, TX** or fully **remote**
-- **Full-time** permanent positions (no contracts, no 1099)
-- At established companies (no startups)
+- **Full-time** only — no contracts, 1099, consulting, or temp roles
+- **Python required** — must appear in title or description
+- Established companies only — no startups
+- No Microsoft, Google, Amazon, Netflix, GitLab, Apple, Meta, or LinkedIn postings
+- Drops Java-only titles, full-stack-only titles, Dice/Indeed sourced postings
 
-New postings are deduplicated against `data/seen_jobs.csv` so you only get notified once per posting.
+Each run deduplicates against `data/seen_jobs.csv` so the same posting never
+appears twice.
 
 ---
-
-## Requirements
-
-- [uv](https://docs.astral.sh/uv/) installed
-- Python 3.14t (free-threaded) — uv uses it automatically via `.python-version`
-- ntfy app on your phone subscribed to `sam-bell-job-alerts-2026`
 
 ## Setup
 
 ```bash
-uv sync
-uv run job-alerts   # test run
+uv sync        # install dependencies (one time)
+make run       # verify it works
+make cron      # register cron job — runs every 4 hours
 ```
 
-## Running on a schedule (cron)
+## Output
 
-```bash
-crontab -e
-```
+Results are appended to `data/jobs.csv` after each run:
 
-Add (adjust path if needed):
+| column | description |
+|---|---|
+| `title` | job title |
+| `company` | company name |
+| `location` | posted location |
+| `is_remote` | true/false |
+| `job_url` | direct link |
 
-```
-0 */4 * * * cd /Users/sambell/Code/py-job-alerts && /Users/sambell/.local/bin/uv run job-alerts >> /tmp/py-job-alerts.log 2>&1
-```
-
-Check logs: `tail -f /tmp/py-job-alerts.log`
+Check logs anytime: `tail -f /tmp/py-job-alerts.log`
 
 ## Configuration
 
 All tuneable settings are in `src/py_job_alerts/config.py`:
 
 - `SEARCH_TERMS` — queries sent to each board
+- `SITES` — job boards to scrape (linkedin, zip_recruiter)
+- `SITES_EXCLUDE` — board names to drop from results
 - `HOURS_OLD` — only surface postings newer than N hours (default: 24)
 - `RESULTS_WANTED` — max results per search term per run
-- `CONTRACT_KEYWORDS` — substrings that flag a contract role
+- `CONTRACT_KEYWORDS` — substrings in title/description that flag a non-fulltime role
 - `STARTUP_KEYWORDS` — description substrings that suggest a startup
-- `MIN_COMPANY_SIZE` — drop companies below this headcount when size data is available
+- `MIN_COMPANY_SIZE` — drop companies below this headcount when data is available
+- `COMPANY_EXCLUDE` — companies to always drop
 - `COMPANY_ALLOWLIST` — companies always kept regardless of startup signals
-- `COMPANY_DENYLIST` — companies always dropped
+- `COMPANY_DENYLIST` — companies always treated as startups
 
 ## Project structure
 
@@ -57,10 +60,11 @@ All tuneable settings are in `src/py_job_alerts/config.py`:
 src/py_job_alerts/
   config.py    — all settings
   scraper.py   — jobspy wrapper (Austin + remote passes per search term)
-  filters.py   — drop contracts / startups / wrong location / non-fulltime
+  filters.py   — filtering pipeline
   dedup.py     — CSV-based seen-job tracking
-  notifier.py  — ntfy push notification
+  writer.py    — appends new jobs to data/jobs.csv
   main.py      — pipeline entry point
 data/
-  seen_jobs.csv  (created on first run, gitignored)
+  jobs.csv       (results, gitignored)
+  seen_jobs.csv  (dedup state, gitignored)
 ```

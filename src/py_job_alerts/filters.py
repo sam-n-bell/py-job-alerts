@@ -13,6 +13,7 @@ from .config import (
     COMPANY_EXCLUDE,
     CONTRACT_KEYWORDS,
     MIN_COMPANY_SIZE,
+    SITES_EXCLUDE,
     STARTUP_KEYWORDS,
 )
 
@@ -20,6 +21,12 @@ from .config import (
 # ---------------------------------------------------------------------------
 # Individual predicates  (return True = should be DROPPED)
 # ---------------------------------------------------------------------------
+
+def _is_excluded_site(row: pd.Series) -> bool:
+    """Drop postings sourced from excluded job boards."""
+    site = str(row.get("site", "")).lower()
+    return any(s in site for s in SITES_EXCLUDE)
+
 
 def _is_excluded_company(row: pd.Series) -> bool:
     """Drop postings from companies on the explicit exclude list."""
@@ -126,7 +133,8 @@ def apply_filters(df: pd.DataFrame) -> pd.DataFrame:
         return df
 
     keep = ~(
-        df.apply(_is_excluded_company, axis=1)
+        df.apply(_is_excluded_site, axis=1)
+        | df.apply(_is_excluded_company, axis=1)
         | df.apply(_lacks_python, axis=1)
         | df.apply(_is_fullstack_without_backend, axis=1)
         | df.apply(_is_java_without_python, axis=1)
